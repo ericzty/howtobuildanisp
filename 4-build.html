@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="A collection of guides to creating your own Internet Service Provider.">
+        <title>How to build your own ISP</title>
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="Build an ISP"/>
+        <meta property="og:description" content="A collection of guides to creating your own Internet Service Provider." />
+        <meta property="og:url" content="https://example.com" />
+        <meta property="og:theme-color" content="#4c566a" />
+        <meta property="og:image" content="img/inferno-white.png">
+        <meta name="theme-color" content="#4c566a" />
+        <link rel="stylesheet" href="/css/pure/pure-min.css">
+        <link rel="stylesheet" href="/css/pure/grids-responsive-min.css">
+        <link rel="stylesheet" href="/css/main.css">
+    </head>
+    <body>
+        <div id="layout" class="pure-g">
+            <div class="sidebar pure-u-1 pure-u-md-1-4">
+                <!-- Left bar -->
+                <div class="header">
+                    <h1 class="brand-title"><a href="index.html">Build an ISP</a></h1>
+                    <br>
+                    <h2 class="brand-tagline">A collection of guides to creating your own Internet Service Provider.<h2>
+                    <div class="pure-menu custom-restricted-width">
+                        <ul class="pure-menu-list">
+                            <li class="pure-menu-item">
+                                <a href="index.html" class="pure-menu-link">Overview</a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="1-internet.html" class="pure-menu-link">How The Internet Works</a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="2-isp.html" class="pure-menu-link">How Your ISP Connects to The Internet</a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="3-ipv6.html" class="pure-menu-link">IPv4, IPv6, Whats The Difference?</a>
+                            </li>
+                            <li class="pure-menu-item pure-menu-selected">
+                                <a href="4-build.html" class="pure-menu-link">You can Build Your Own ISP!</a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="5-prereq.html" class="pure-menu-link">Getting an ASN and a Prefix</a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="6-bird.html" class="pure-menu-link">Setting Up BIRD on Your Server</a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="7-wireguard.html" class="pure-menu-link">Connect Your Local Devices to Your Network</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="content pure-u-1 pure-u-md-3-4">
+                <!-- Content -->
+                <div class="posts">
+                    <section class="post">
+                        <header class="post-header">
+                            <h2 class="post-title">You can Build Your Own ISP!</h2>
+                        </header>
+                        <div class="post-description">
+                            <p>
+That's correct! You can build your own network on the internet, along with your own AS number and IP Prefix. You can connect your devices to it and browse the internet with your own IP addresses.
+<br>
+<br>
+Why would you build your own ISP?
+<br>
+<i>
+• Learning: Well, it is a great way to learn computer networking, especially if you're interested in getting a job in the tech field.
+<br>
+• Networking: There is also a whole community of hobbyist network operators out there, allowing you to network with other people in the field and make new friends.
+<br>
+• IPv6 Access: If your ISP does not provide IPv6, you can use your network's IPv6 address to browse the web with IPv6. You can also offer your friends and family with IP addresses to use.
+<br>
+• Cheaper IP Addresses: If you're planning on running a hosting company or something that uses a lot of IP addresses, running your network would also drive down the costs of renting individual IP addresses from another company.
+</i>
+<br>
+<br>
+<a href="5-prereq.html"><b><i>You can learn how to build your own ISP at the next blog post.</i></b></a>
+                            </p>
+                        </div>
+                    </section>
+                </div>
+                <br>
+                <!-- CTA -->
+                <div class="ribbon pure-g">
+                    <div class="pure-u-1 pure-u-md-2-3 pure-u-lg-3-5">
+                        <h2 class="content-head content-head-ribbon">Ready to get started?</h2>
+                        <p>
+                        Get all the Internet Resources you need from Inferno Communications and kickstart your own ISP today!
+                        </p>
+                    </div>
+                    <div class="pure-u-1 pure-u-md-1-3 pure-u-lg-2-5">
+                        <a class="button-cta pure-button pure-button-primary" href="#"><b>Get started!</b></a>
+                    </div>
+                </div>
+                <br>
+                <!-- Form + About -->
+                <h2 class="post-title">Questions? We're here to help!</h2>
+                <div class="pure-g">
+                    <div class="l-box-lrg pure-u-1 pure-u-md-2-5">
+                        <form class="pure-form pure-form-stacked">
+                            <fieldset>
+                                <label for="name">Name</label>
+                                <input class="pure-input-3-4" id="name" type="text" placeholder="John Doe" required="">
+                                <label for="email">Email</label>
+                                <input class="pure-input-3-4" id="email" type="email" placeholder="name@example.com" required="">
+                                <label for="message">Question</label>
+                                <textarea class="pure-input-3-4" placeholder="Question/Inquiry (300 words max)" required=""></textarea>
+                                <br>
+                                <button type="submit" class="pure-button">Submit</button>
+                            </fieldset>
+                        </form>
+                    </div>
+                    <div class="l-box-lrg pure-u-1 pure-u-md-3-5">
+                        <h4>About Inferno Communications</h4>
+                        <p>
+                        Aiming to make the internet more accessible to all, Inferno offer low-cost, flexible, and agile LIR and Colocation services along with a lightning fast support team that is ready to tackle your questions at any moment.
+                        <br><br>
+                        Inferno Communications Ltd is a company registered in England and Wales with company number 11502705.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="A collection of guides to creating your own Internet Service Provider.">
+        <title>How to build your own ISP</title>
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="Build an ISP"/>
+        <meta property="og:description" content="A collection of guides to creating your own Internet Service Provider." />
+        <meta property="og:url" content="https://example.com" />
+        <meta property="og:theme-color" content="#4c566a" />
+        <meta property="og:image" content="img/inferno-white.png">
+        <meta name="theme-color" content="#4c566a" />
+        <link rel="stylesheet" href="/css/pure/pure-min.css">
+        <link rel="stylesheet" href="/css/pure/grids-responsive-min.css">
+        <link rel="stylesheet" href="/css/main.css">
+    </head>
+    <body>
+        <div id="layout" class="pure-g">
+            <div class="sidebar pure-u-1 pure-u-md-1-4">
+                <!-- Left bar -->
+                <div class="header">
+                    <h1 class="brand-title"><a href="index.html">Build an ISP</a></h1>
+                    <br>
+                    <h2 class="brand-tagline">A collection of guides to creating your own Internet Service Provider.<h2>
+                    <div class="pure-menu custom-restricted-width">
+                        <ul class="pure-menu-list">
+                            <li class="pure-menu-item">
+                                <a href="index.html" class="pure-menu-link">Overview</a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="1-internet.html" class="pure-menu-link">How The Internet Works</a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="2-isp.html" class="pure-menu-link">How Your ISP Connects to The Internet</a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="3-ipv6.html" class="pure-menu-link">IPv4, IPv6, Whats The Difference?</a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="4-build.html" class="pure-menu-link">You can Build Your Own ISP!</a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="5-prereq.html" class="pure-menu-link">Getting an ASN and a Prefix</a>
+                            </li>
+                            <li class="pure-menu-item pure-menu-selected">
+                                <a href="6-bird.html" class="pure-menu-link">Setting Up BIRD on Your Server</a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="7-wireguard.html" class="pure-menu-link">Connect Your Local Devices to Your Network</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="content pure-u-1 pure-u-md-3-4">
+                <!-- Content -->
+                <div class="posts">
+                    <section class="post">
+                        <header class="post-header">
+                            <h2 class="post-title">Setting Up BIRD on Your Server</h2>
+                        </header>
+                        <div class="post-description">
+                            <p>
+Setting up your network
+<br>
+Before we start, let's make sure we have everything ready.
+<br>
+• A RIPE ASN
+<br>
+• A RIPE IPv6 Prefix
+<br>
+• Transit Providers (If you want to run your ISP from your home)
+<br>
+• VPS Provider with transit (If you want to run your ISP from a server)
+<br>
+<br>
+For the following tutorial I will be using Debian 11 in a Vultr VPS with Vultr as my upstream.
+<br>
+<br>
+Vultr (and some other transit providers) requires you to provide them with a LoA (Letter of Authorization), allowing them to transit your IP Prefix and your ASN. This can be done easily via <a href="https://loa.tools"><b><i>loa.tools</i></b></a>, plugging in your ASN's information and Vultr's (AS20473) information.
+<br>
+<br>
+We will use 65535 as our ASN in the following documentation and 2001:DB8:1234::/48 as our prefix.
+<br>
+<br>
+After you log into the server via ssh, we need to install bird2. Bird2 is a software that communicates with other routers using BGP. (Note: If you have firewall enabled, please allow 179/tcp)
+<br>
+<br>
+<code>ufw allow 179</code>
+<br>
+<code>apt install bird2</code>
+<br>
+We will also make a dummy interface where we will route your prefix to.
+(Note: If you are setting this device up as a router at your home, replace dummy0 with your LAN interface, and you can omit the last line with 'pre-up')
+Edit `/etc/network/interfaces` and add the following lines
+<br>
+<br>
+<code>iface dummy0 inet6 static
+        address 2001:DB8:1234::/48
+        pre-up ip link add dummy0 type dummy</code>
+<br>
+<br>
+After bird2 is installed, we will edit its configration file at `/etc/bird/bird.conf`
+<br>
+<br>
+<code>log syslog all;
+
+router id 0.0.0.0;
+# Replace 0.0.0.0 with your VPS's public IPv4 address
+
+protocol device {
+        scan time 5;
+}
+
+protocol direct {
+        interface "dummy*";
+        ipv6;
+}
+
+protocol static
+{
+        ipv6;
+        route 2001:DB8:1234::/48 via yourVMsIPv6AddressHere;
+}
+
+protocol bgp vultr {
+        description "Vultr";
+        local yourVMsIPv6AddressHere as 65535;
+        neighbor 2001:19f0:ffff::1 as 64515;
+        multihop 2;
+        password "bgpPassword";
+        ipv6 {
+                import all;
+                export filter {
+                        if net = 2001:DB8:1234::/48 then accept;
+                };
+        };
+}</code>
+<br>
+Do <code>birdc configure</code> to apply the changes. And do <code>systemctl enable --now bird2</code> to ensure it is started and enabled.
+<br>
+<br>
+You can do <code>birdc show protocol all</code> to check the BGP session, you should see the connection as Established.
+<br>
+To test using your own IPv6 address, do <code>ping -i yourOwnIPv6Address google.com</code>
+<br>
+<br>
+<a href="7-wireguard.html"><b><i>Now we can move on to connecting your devices to your network remotely via a VPN.</i></b></a>
+                            </p>
+                        </div>
+                    </section>
+                </div>
+                <br>
+                <!-- CTA -->
+                <div class="ribbon pure-g">
+                    <div class="pure-u-1 pure-u-md-2-3 pure-u-lg-3-5">
+                        <h2 class="content-head content-head-ribbon">Ready to get started?</h2>
+                        <p>
+                        Get all the Internet Resources you need from Inferno Communications and kickstart your own ISP today!
+                        </p>
+                    </div>
+                    <div class="pure-u-1 pure-u-md-1-3 pure-u-lg-2-5">
+                        <a class="button-cta pure-button pure-button-primary" href="#"><b>Get started!</b></a>
+                    </div>
+                </div>
+                <br>
+                <!-- Form + About -->
+                <h2 class="post-title">Questions? We're here to help!</h2>
+                <div class="pure-g">
+                    <div class="l-box-lrg pure-u-1 pure-u-md-2-5">
+                        <form class="pure-form pure-form-stacked">
+                            <fieldset>
+                                <label for="name">Name</label>
+                                <input class="pure-input-3-4" id="name" type="text" placeholder="John Doe" required="">
+                                <label for="email">Email</label>
+                                <input class="pure-input-3-4" id="email" type="email" placeholder="name@example.com" required="">
+                                <label for="message">Question</label>
+                                <textarea class="pure-input-3-4" placeholder="Question/Inquiry (300 words max)" required=""></textarea>
+                                <br>
+                                <button type="submit" class="pure-button">Submit</button>
+                            </fieldset>
+                        </form>
+                    </div>
+                    <div class="l-box-lrg pure-u-1 pure-u-md-3-5">
+                        <h4>About Inferno Communications</h4>
+                        <p>
+                        Aiming to make the internet more accessible to all, Inferno offer low-cost, flexible, and agile LIR and Colocation services along with a lightning fast support team that is ready to tackle your questions at any moment.
+                        <br><br>
+                        Inferno Communications Ltd is a company registered in England and Wales with company number 11502705.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

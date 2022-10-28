@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="A collection of guides to creating your own Internet Service Provider.">
+        <title>How to build your own ISP</title>
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="Build an ISP"/>
+        <meta property="og:description" content="A collection of guides to creating your own Internet Service Provider." />
+        <meta property="og:url" content="https://example.com" />
+        <meta property="og:theme-color" content="#4c566a" />
+        <meta property="og:image" content="img/inferno-white.png">
+        <meta name="theme-color" content="#4c566a" />
+        <link rel="stylesheet" href="/css/pure/pure-min.css">
+        <link rel="stylesheet" href="/css/pure/grids-responsive-min.css">
+        <link rel="stylesheet" href="/css/main.css">
+    </head>
+    <body>
+        <div id="layout" class="pure-g">
+            <div class="sidebar pure-u-1 pure-u-md-1-4">
+                <!-- Left bar -->
+                <div class="header">
+                    <h1 class="brand-title"><a href="index.html">Build an ISP</a></h1>
+                    <br>
+                    <h2 class="brand-tagline">A collection of guides to creating your own Internet Service Provider.<h2>
+                    <div class="pure-menu custom-restricted-width">
+                        <ul class="pure-menu-list">
+                            <li class="pure-menu-item">
+                                <a href="index.html" class="pure-menu-link">Overview</a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="1-internet.html" class="pure-menu-link">How The Internet Works</a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="2-isp.html" class="pure-menu-link">How Your ISP Connects to The Internet</a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="3-ipv6.html" class="pure-menu-link">IPv4, IPv6, Whats The Difference?</a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="4-build.html" class="pure-menu-link">You can Build Your Own ISP!</a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="5-prereq.html" class="pure-menu-link">Getting an ASN and a Prefix</a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="6-bird.html" class="pure-menu-link">Setting Up BIRD on Your Server</a>
+                            </li>
+                            <li class="pure-menu-item pure-menu-selected">
+                                <a href="7-wireguard.html" class="pure-menu-link">Connect Your Local Devices to Your Network</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="content pure-u-1 pure-u-md-3-4">
+                <!-- Content -->
+                <div class="posts">
+                    <section class="post">
+                        <header class="post-header">
+                            <h2 class="post-title">Connect Your Local Devices to Your Network</h2>
+                        </header>
+                        <div class="post-description">
+                            <p>
+Connecting your device to your network via a VPN.
+<br>
+<br>
+A VPN stands for Virtual Private Network, from Wikipedia "A virtual private network extends a private network across a public network and enables users to send and receive data across shared or public networks as if their computing devices were directly connected to the private network." In short, it allows your device to use the network connection from your VPS.
+<br>
+<br>
+We will be using the same machine from the last article.
+<br>
+<br>
+First we install our VPN server, wireguard.
+<code>apt install wireguard</code>
+<br>
+Then we will create a public and private key pair.
+<br>
+<code>cd /etc/wireguard
+wg genkey | tee privatekey | wg pubkey > publickey</code>
+<br>
+This will create two files in the wireguard directory, publickey and privatekey.
+Now we make a wireguard configuration at <code>/etc/wireguard/wg0.conf</code> And fill out the configuration.
+<br>
+<code>[Interface]
+PrivateKey = privateKeyHere
+Address = 2001:DB8:1234:a::/64
+ListenPort = 7777 or any other port
+
+[Peer]
+PublicKey = Your device's wireguard publickey
+AllowedIPs = 2001:DB8:1234:a:1::/80</code>
+
+<br>
+Start and Enable that wireguard tunnel via <code>systemctl enable --now wg-quick@wg0</code>
+<br>
+Enable forwarding by uncommenting <code>net.ipv6.conf.all.forwarding</code> in <code>/etc/sysctl.conf</code> and setting it to 1 and restart the server. Also allow port 7777 on your firewall.
+<br>
+<code>ufw allow 7777</code>
+<br>
+On your client, create a public and private key, and use the following config.
+<br>
+<code>[Interface]
+PrivateKey = ClientPrivatekey
+Address = 2001:DB8:1234:a:1::/64
+
+[Peer]
+PublicKey = wireguard server's public key
+AllowedIPs = ::/0
+Endpoint = wireguard server public address:port</code>
+<br>
+Start and Enable that wireguard tunnel via <code>systemctl enable --now wg-quick@wg0</code>
+<br>
+<b>And there you have it, your device connected to the internet from your own network and your own address. Congrats!</b>
+                            </p>
+                        </div>
+                    </section>
+                </div>
+                <br>
+                <!-- CTA -->
+                <div class="ribbon pure-g">
+                    <div class="pure-u-1 pure-u-md-2-3 pure-u-lg-3-5">
+                        <h2 class="content-head content-head-ribbon">Ready to get started?</h2>
+                        <p>
+                        Get all the Internet Resources you need from Inferno Communications and kickstart your own ISP today!
+                        </p>
+                    </div>
+                    <div class="pure-u-1 pure-u-md-1-3 pure-u-lg-2-5">
+                        <a class="button-cta pure-button pure-button-primary" href="#"><b>Get started!</b></a>
+                    </div>
+                </div>
+                <br>
+                <!-- Form + About -->
+                <h2 class="post-title">Questions? We're here to help!</h2>
+                <div class="pure-g">
+                    <div class="l-box-lrg pure-u-1 pure-u-md-2-5">
+                        <form class="pure-form pure-form-stacked">
+                            <fieldset>
+                                <label for="name">Name</label>
+                                <input class="pure-input-3-4" id="name" type="text" placeholder="John Doe" required="">
+                                <label for="email">Email</label>
+                                <input class="pure-input-3-4" id="email" type="email" placeholder="name@example.com" required="">
+                                <label for="message">Question</label>
+                                <textarea class="pure-input-3-4" placeholder="Question/Inquiry (300 words max)" required=""></textarea>
+                                <br>
+                                <button type="submit" class="pure-button">Submit</button>
+                            </fieldset>
+                        </form>
+                    </div>
+                    <div class="l-box-lrg pure-u-1 pure-u-md-3-5">
+                        <h4>About Inferno Communications</h4>
+                        <p>
+                        Aiming to make the internet more accessible to all, Inferno offer low-cost, flexible, and agile LIR and Colocation services along with a lightning fast support team that is ready to tackle your questions at any moment.
+                        <br><br>
+                        Inferno Communications Ltd is a company registered in England and Wales with company number 11502705.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
